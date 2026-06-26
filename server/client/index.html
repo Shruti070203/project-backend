@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Commerce Store</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header>
+      <nav>
+        <div class="logo">🛍️ E-Shop</div>
+
+        <div class="nav-search">
+          <input
+            type="text"
+            id="header-search-input"
+            class="header-search-bar"
+            placeholder="Search products..."
+          />
+        </div>
+
+        <ul class="nav-links">
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./pages/categories.html">Categories</a></li>
+          <li><a href="./pages/add-product.html">Add Product</a></li>
+          <li>
+            <a href="./pages/cart.html">Cart <span id="cart-count">0</span></a>
+          </li>
+          <li>
+            <span id="userName" style="color: white; font-weight: 600"></span>
+          </li>
+          <!-- 👇 LOGOUT BUTTON -->
+          <li>
+            <a href="#" onclick="logout()" style="color: #ffcccc">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container">
+      <div class="shop-layout">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+          <!-- CATEGORIES -->
+          <section id="categories">
+            <h2>Shop by Category</h2>
+
+            <div class="category-carousel-wrapper">
+              <button id="cat-prev" class="carousel-btn">&#8249;</button>
+
+              <div id="categories-grid" class="category-carousel-track"></div>
+
+              <button id="cat-next" class="carousel-btn">&#8250;</button>
+            </div>
+          </section>
+
+          <!-- PRODUCTS -->
+          <section id="featured-products">
+            <h2>Featured Products</h2>
+
+            <div id="products-grid" class="card-grid"></div>
+
+            <div id="pagination-root" class="pagination-bottom-wrapper">
+              <div id="pagination-info" class="pagination-info"></div>
+
+              <div id="pagination-wrapper" class="pagination-wrapper">
+                <button id="prev-page-btn" class="pagination-btn">
+                  ‹ Previous
+                </button>
+
+                <div id="pagination-pages" class="pagination-pages"></div>
+
+                <button id="next-page-btn" class="pagination-btn">
+                  Next ›
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+        <!-- main-content close -->
+      </div>
+      <!-- shop-layout close -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 E-Shop. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./js/app.js"></script>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "login.html";
+      }
+
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        document.getElementById("userName").textContent = `Hello, ${user.name}`;
+      }
+
+      // 👇 LOGOUT FUNCTION BHI ADD KARO
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+      }
+
+      // Carousel
+      function initCarousel() {
+        const track = document.getElementById("categories-grid");
+        const prevBtn = document.getElementById("cat-prev");
+        const nextBtn = document.getElementById("cat-next");
+
+        if (!track || !prevBtn || !nextBtn) return;
+
+        const scrollAmount = 220;
+
+        nextBtn.addEventListener("click", () => {
+          track.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        });
+
+        prevBtn.addEventListener("click", () => {
+          track.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+        });
+      }
+
+      initCarousel();
+
+      // Search
+      const searchInput = document.getElementById("header-search-input");
+
+      if (searchInput) {
+        searchInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            const query = searchInput.value;
+            searchProducts(query);
+          }
+        });
+      }
+
+      // Load data
+      const urlSearch = new URLSearchParams(window.location.search).get(
+        "search",
+      );
+
+      if (urlSearch) {
+        searchProducts(urlSearch);
+      } else {
+        loadFeaturedProducts();
+      }
+    </script>
+  </body>
+</html>

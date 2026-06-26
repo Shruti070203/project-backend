@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categories - E-Commerce Store</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <div class="logo">🛍️ E-Shop</div>
+
+        <div class="nav-search">
+          <input
+            type="text"
+            id="header-search-input"
+            class="header-search-bar"
+            placeholder="Search products..."
+          />
+        </div>
+
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="./categories.html">Categories</a></li>
+          <li><a href="./add-product.html">Add Product</a></li>
+          <li>
+            <a href="./cart.html">Cart <span id="cart-count">0</span></a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container_1">
+      <div class="category-layout">
+        <aside class="filter-sidebar hidden">
+          <div class="filter-header">
+            <span>Filters</span>
+            <button id="clear-all-btn">CLEAR ALL</button>
+          </div>
+
+          <div class="filter-section">
+            <h4>CATEGORIES</h4>
+            <div id="filter-categories"></div>
+          </div>
+
+          <div class="filter-section">
+            <h4>BRAND</h4>
+            <div id="filter-brands"></div>
+          </div>
+
+          <div class="filter-section">
+            <h4>PRICE</h4>
+            <input
+              type="range"
+              id="price-range"
+              min="0"
+              max="100000"
+              step="100"
+            />
+            <div id="price-label">₹0 - ₹100000+</div>
+          </div>
+
+          <div class="filter-section">
+            <h4>RATING</h4>
+            <div id="filter-ratings">
+              <label>
+                <input type="radio" name="rating" value="4" /> 4★ & above
+              </label>
+              <label>
+                <input type="radio" name="rating" value="3" /> 3★ & above
+              </label>
+              <label>
+                <input type="radio" name="rating" value="2" /> 2★ & above
+              </label>
+            </div>
+          </div>
+        </aside>
+
+        <div class="category-content">
+          <section id="category-products">
+            <h2 id="category-title">Products</h2>
+
+            <div id="products-grid" class="card-grid_category"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container_2">
+        <p>&copy; 2024 E-Shop. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+
+    <script>
+      // Ek block mein wrap karo — baaki variables se conflict nahi hoga
+      {
+        // ─────────────────────────────────────
+        // 1. STARTING VARIABLES
+        // ─────────────────────────────────────
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get("category");
+        const filterSidebar = document.querySelector(".filter-sidebar");
+
+        let activeFilters = {
+          categories: [],
+          brands: [],
+          minPrice: 0,
+          maxPrice: 100000,
+          rating: 0,
+        };
+
+        // ─────────────────────────────────────
+        // 2. SIDEBAR DIKHAO YA CHHUPAO
+        // ─────────────────────────────────────
+        function showSidebar(visible) {
+          if (!filterSidebar) return;
+          if (visible) {
+            filterSidebar.classList.remove("hidden");
+          } else {
+            filterSidebar.classList.add("hidden");
+          }
+        }
+
+        // ─────────────────────────────────────
+        // 3. URL UPDATE KARO
+        // ─────────────────────────────────────
+        function updateURL() {
+          const params = new URLSearchParams();
+          if (currentCategory) params.set("category", currentCategory);
+          if (activeFilters.categories.length)
+            params.set("filterCategories", activeFilters.categories.join(","));
+          if (activeFilters.brands.length)
+            params.set("filterBrands", activeFilters.brands.join(","));
+          if (activeFilters.minPrice > 0)
+            params.set("minPrice", activeFilters.minPrice);
+          if (activeFilters.maxPrice < 100000)
+            params.set("maxPrice", activeFilters.maxPrice);
+          if (activeFilters.rating > 0)
+            params.set("rating", activeFilters.rating);
+          window.history.pushState({}, "", `?${params.toString()}`);
+        }
+        // ─────────────────────────────────────
+        // 4. URL SE FILTERS PADHNA
+        // ─────────────────────────────────────
+        function readFiltersFromURL() {
+          const params = new URLSearchParams(window.location.search);
+          activeFilters.categories =
+            params.get("filterCategories")?.split(",") || [];
+          activeFilters.brands = params.get("filterBrands")?.split(",") || [];
+          activeFilters.minPrice = parseInt(params.get("minPrice")) || 0;
+          activeFilters.maxPrice = parseInt(params.get("maxPrice")) || 100000;
+          activeFilters.rating = parseInt(params.get("rating")) || 0;
+        }
+
+        // ─────────────────────────────────────
+        // 5. PRODUCTS LOAD KARO
+        // ─────────────────────────────────────
+        async function loadProducts() {
+          showSidebar(true);
+          const productsGrid = document.getElementById("products-grid");
+          showLoading(productsGrid);
+
+          try {
+            let url = `${API_BASE}/products?limit=500`;
+            if (currentCategory) {
+              const formattedCategory =
+                currentCategory.charAt(0).toUpperCase() +
+                currentCategory.slice(1).toLowerCase();
+              url += `&category=${formattedCategory}`;
+            }
+
+            const response = await fetch(url);
+            const result = await response.json();
+            let products = result.data || [];
+
+            // Filter 1: Category
+            if (activeFilters.categories.length > 0) {
+              products = products.filter((product) =>
+                activeFilters.categories.includes(product.category),
+              );
+            }
+
+            // Filter 2: Brand
+            if (activeFilters.brands.length > 0) {
+              products = products.filter((product) =>
+                activeFilters.brands.includes(product.brand),
+              );
+            }
+
+            // Filter 3: Price
+            products = products.filter(
+              (product) =>
+                product.price >= activeFilters.minPrice &&
+                product.price <= activeFilters.maxPrice,
+            );
+
+            // Filter 4: Rating
+            if (activeFilters.rating > 0) {
+              products = products.filter(
+                (product) => product.rating >= activeFilters.rating,
+              );
+            }
+
+            if (products.length === 0) {
+              productsGrid.innerHTML =
+                '<div class="error">No products found. Try changing filters.</div>';
+            } else {
+              productsGrid.innerHTML = products.map(createProductCard).join("");
+              attachAddToCartListeners();
+            }
+
+            const titleText = currentCategory
+              ? `${currentCategory} Products (${products.length})`
+              : `Products (${products.length})`;
+            document.getElementById("category-title").textContent = titleText;
+          } catch (error) {
+            console.error("Error loading products:", error);
+            productsGrid.innerHTML = `<div class="error">Failed to load products: ${error.message}</div>`;
+          }
+        }
+
+        // ─────────────────────────────────────
+        // 6. CATEGORY FILTER SETUP
+        // ─────────────────────────────────────
+        async function setupCategoryFilter() {
+          try {
+            const categories = await fetchCategories();
+            const container = document.getElementById("filter-categories");
+
+            container.innerHTML = categories
+              .map(
+                (cat) => `
+          <label class="filter-item">
+            <input type="checkbox" value="${cat}" ${activeFilters.categories.includes(cat) ? "checked" : ""}>
+            <span>${cat}</span>
+          </label>
+        `,
+              )
+              .join("");
+
+            container
+              .querySelectorAll('input[type="checkbox"]')
+              .forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                  if (checkbox.checked) {
+                    activeFilters.categories.push(checkbox.value);
+                  } else {
+                    activeFilters.categories = activeFilters.categories.filter(
+                      (c) => c !== checkbox.value,
+                    );
+                  }
+                  updateURL();
+                  loadProducts();
+                });
+              });
+          } catch (error) {
+            console.error("Error loading category filter:", error);
+          }
+        }
+
+        // ─────────────────────────────────────
+        // 7. BRAND FILTER SETUP
+        // ─────────────────────────────────────
+        async function setupBrandFilter() {
+          try {
+            let url = `${API_BASE}/products?limit=500`;
+            if (currentCategory) {
+              const formattedCategory =
+                currentCategory.charAt(0).toUpperCase() +
+                currentCategory.slice(1).toLowerCase();
+              url += `&category=${formattedCategory}`;
+            }
+
+            const response = await fetch(url);
+            const result = await response.json();
+            const products = result.data || [];
+
+            const brands = [
+              ...new Set(
+                products.map((p) => p.brand).filter((b) => b && b !== ""),
+              ),
+            ];
+            const container = document.getElementById("filter-brands");
+
+            if (brands.length === 0) {
+              container.innerHTML =
+                '<div class="filter-item">No brands available</div>';
+              return;
+            }
+
+            container.innerHTML = brands
+              .map(
+                (brand) => `
+          <label class="filter-item">
+            <input type="checkbox" value="${brand.replace(/"/g, "&quot;")}" ${activeFilters.brands.includes(brand) ? "checked" : ""}>
+            <span>${brand}</span>
+          </label>
+        `,
+              )
+              .join("");
+
+            container
+              .querySelectorAll('input[type="checkbox"]')
+              .forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                  if (checkbox.checked) {
+                    activeFilters.brands.push(checkbox.value);
+                  } else {
+                    activeFilters.brands = activeFilters.brands.filter(
+                      (b) => b !== checkbox.value,
+                    );
+                  }
+                  updateURL();
+                  loadProducts();
+                });
+              });
+          } catch (error) {
+            console.error("Error loading brand filter:", error);
+            document.getElementById("filter-brands").innerHTML =
+              '<div class="error">Failed to load brands</div>';
+          }
+        }
+
+        // ─────────────────────────────────────
+        // 8. PRICE FILTER SETUP
+        // ─────────────────────────────────────
+        function setupPriceFilter() {
+          const priceRange = document.getElementById("price-range");
+          const priceLabel = document.getElementById("price-label");
+
+          priceRange.value = activeFilters.maxPrice;
+          priceLabel.innerText = `₹0 - ₹${activeFilters.maxPrice}+`;
+
+          let debounceTimer = null;
+          priceRange.addEventListener("input", (e) => {
+            const selectedPrice = parseInt(e.target.value);
+            priceLabel.innerText = `₹0 - ₹${selectedPrice}+`;
+            activeFilters.maxPrice = selectedPrice;
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+              updateURL();
+              loadProducts();
+            }, 400);
+          });
+        }
+
+        // ─────────────────────────────────────
+        // 9. RATING FILTER SETUP
+        // ─────────────────────────────────────
+        function setupRatingFilter() {
+          const ratingRadios = document.querySelectorAll(
+            'input[name="rating"]',
+          );
+          ratingRadios.forEach((radio) => {
+            if (parseInt(radio.value) === activeFilters.rating) {
+              radio.checked = true;
+            }
+            radio.addEventListener("change", () => {
+              if (radio.checked) {
+                activeFilters.rating = parseInt(radio.value);
+                updateURL();
+                loadProducts();
+              }
+            });
+          });
+        }
+
+        // ─────────────────────────────────────
+        // 10. CLEAR ALL BUTTON
+        // ─────────────────────────────────────
+        function setupClearAllButton() {
+          const clearBtn = document.getElementById("clear-all-btn");
+          if (!clearBtn) return;
+
+          clearBtn.addEventListener("click", () => {
+            activeFilters = {
+              categories: [],
+              brands: [],
+              minPrice: 0,
+              maxPrice: 100000,
+              rating: 0,
+            };
+
+            document
+              .querySelectorAll("#filter-categories input")
+              .forEach((cb) => (cb.checked = false));
+            document
+              .querySelectorAll("#filter-brands input")
+              .forEach((cb) => (cb.checked = false));
+            document
+              .querySelectorAll('input[name="rating"]')
+              .forEach((radio) => (radio.checked = false));
+
+            const priceRange = document.getElementById("price-range");
+            if (priceRange) priceRange.value = 100000;
+
+            const priceLabel = document.getElementById("price-label");
+            if (priceLabel) priceLabel.innerText = "₹0 - ₹100000+";
+
+            updateURL();
+            loadProducts();
+          });
+        }
+
+        // ─────────────────────────────────────
+        // 11. SEARCH BAR
+        // ─────────────────────────────────────
+        const searchInput = document.getElementById("header-search-input");
+        if (searchInput) {
+          searchInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              window.location.href = `../index.html?search=${searchInput.value}`;
+            }
+          });
+        }
+
+        // ─────────────────────────────────────
+        // 12. ALL CATEGORIES DIKHAO
+        // ─────────────────────────────────────
+        async function loadAllCategories() {
+          showSidebar(false);
+          try {
+            const categories = await fetchCategories();
+            const productsGrid = document.getElementById("products-grid");
+            productsGrid.innerHTML = categories
+              .map(createCategoryCard)
+              .join("");
+            document.getElementById("category-title").textContent =
+              "All Categories";
+          } catch (error) {
+            console.error("Error:", error);
+            showError(
+              document.getElementById("products-grid"),
+              "Failed to load categories",
+            );
+          }
+        }
+
+        // ─────────────────────────────────────
+        // 13. PAGE START
+        // ─────────────────────────────────────
+        async function startPage() {
+          readFiltersFromURL();
+          if (currentCategory) {
+            await setupCategoryFilter();
+            await setupBrandFilter();
+            setupPriceFilter();
+            setupRatingFilter();
+            setupClearAllButton();
+            await loadProducts();
+          } else {
+            await loadAllCategories();
+          }
+        }
+
+        startPage();
+      }
+    </script>
+  </body>
+</html>

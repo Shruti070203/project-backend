@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - E-Shop</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Poori body reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: #f5f0eb;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Navbar — same login jaisa */
+      nav {
+        background-color: #6c5ce7;
+        padding: 15px 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        color: white;
+        font-size: 22px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      /* Card center mein */
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        padding: 40px 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .card h2 {
+        font-size: 30px;
+        color: #2d3436;
+        margin-bottom: 6px;
+      }
+
+      .card p.subtitle {
+        color: #888;
+        font-size: 17px;
+        margin-bottom: 28px;
+      }
+
+      /* Input fields */
+      .input-group {
+        margin-bottom: 18px;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 17px;
+        color: #555;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.5px solid #ddd;
+        border-radius: 8px;
+        font-size: 17px;
+        outline: none;
+        transition: border 0.2s;
+      }
+
+      /* Focus pe purple border */
+      .input-group input:focus {
+        border-color: #6c5ce7;
+      }
+
+      /* Register button */
+      .btn {
+        width: 100%;
+        padding: 13px;
+        background-color: #6c5ce7;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: background 0.2s;
+      }
+
+      .btn:hover {
+        background-color: #5a4bd1;
+      }
+
+      /* Error message — red */
+      .error-msg {
+        background: #ffe0e0;
+        color: #d63031;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 17px;
+        margin-bottom: 16px;
+        display: none;
+      }
+
+      /* Success message — green */
+      .success-msg {
+        background: #e0ffe0;
+        color: #00b894;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 17px;
+        margin-bottom: 16px;
+        display: none;
+      }
+
+      /* Bottom link */
+      .bottom-text {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 17px;
+        color: #888;
+      }
+
+      .bottom-text a {
+        color: #6c5ce7;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .bottom-text a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav>
+      <a href="index.html" class="logo">🛍️ E-Shop</a>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="container">
+      <div class="card">
+        <h2>Create Account</h2>
+        <p class="subtitle">Create your account to get started</p>
+
+        <!-- Error message — galat input pe dikhega -->
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Success message — account banne pe dikhega -->
+        <div class="success-msg" id="successMsg"></div>
+
+        <!-- Name field -->
+        <div class="input-group">
+          <label>Full Name</label>
+          <!-- id="name" se JS mein value milegi -->
+          <input type="text" id="name" placeholder="Enter your full name" />
+        </div>
+
+        <!-- Email field -->
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="example@gmail.com" />
+        </div>
+
+        <!-- Password field -->
+        <!-- Password field -->
+        <div class="input-group">
+          <label>Password</label>
+          <div style="position: relative">
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              style="padding-right: 45px"
+            />
+            <img
+              id="togglePasswordIcon"
+              src="./images/eye-close.png"
+              onclick="togglePassword('password', 'togglePasswordIcon')"
+              style="
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                width: 24px;
+                height: 20px;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Confirm Password field -->
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <div style="position: relative">
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm your password"
+              style="padding-right: 45px"
+            />
+            <img
+              id="toggleConfirmIcon"
+              src="./images/eye-close.png"
+              onclick="togglePassword('confirmPassword', 'toggleConfirmIcon')"
+              style="
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                width: 24px;
+                height: 20px;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Register button — click pe registerUser() chalega -->
+        <button class="btn" onclick="registerUser()">Create Account</button>
+
+        <div class="bottom-text">
+          Do you have an account? <a href="login.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function registerUser() {
+        // Charon fields se value lo
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        console.log("STEP 1 - Values Read");
+
+        // Koi field khali ho toh roklo
+        if (!name || !email || !password || !confirmPassword) {
+          showError("Enter all fields!");
+          return;
+        }
+
+        // Full name validation
+        if (name.trim().split(" ").length < 2) {
+          showError("Please enter your full name!");
+          return;
+        }
+
+        // Email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email)) {
+          showError("Please enter a valid email address!");
+          return;
+        }
+        // Dono password match nahi karte toh roklo
+        if (password !== confirmPassword) {
+          showError("Passwords do not match!");
+          return;
+        }
+
+        // Password bahut chhota ho toh roklo
+        if (password.length < 6) {
+          showError("Password must be at least 6 characters long!");
+          return;
+        }
+
+        console.log("STEP 2 - Before Fetch");
+
+        // Backend ko register request bhejo
+        const res = await fetch("http://localhost:3001/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          // name, email, password JSON mein bhejo
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        console.log("STEP 3 - Fetch Complete");
+        console.log("Status:", res.status);
+
+        // Response lo
+        const data = await res.json();
+
+        console.log("STEP 4 - JSON Parsed");
+        console.log(data);
+
+        if (data.success) {
+          console.log("STEP 5 - Success");
+          // Email save karo taaki OTP page use access kar sake
+          localStorage.setItem("otpEmail", email);
+
+          showSuccess("OTP sent successfully!");
+
+          setTimeout(() => {
+            window.location.href = "verify-otp.html";
+          }, 1000);
+        } else {
+          console.log("STEP 5 - Failed");
+          showError(data.error || "Register again, something went wrong!");
+        }
+      }
+
+      // Error dikhane ka function
+      function showError(msg) {
+        const el = document.getElementById("errorMsg");
+        el.textContent = msg;
+        el.style.display = "block";
+        // Success message chhupao
+        document.getElementById("successMsg").style.display = "none";
+      }
+
+      // Success dikhane ka function
+      function showSuccess(msg) {
+        const el = document.getElementById("successMsg");
+        el.textContent = msg;
+        el.style.display = "block";
+        // Error message chhupao
+        document.getElementById("errorMsg").style.display = "none";
+      }
+      function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === "password") {
+          input.type = "text";
+          icon.src = "./images/eye-open.png";
+        } else {
+          input.type = "password";
+          icon.src = "./images/eye-close.png";
+        }
+      }
+    </script>
+  </body>
+</html>

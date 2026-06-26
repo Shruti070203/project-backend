@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "Backend-Ecomm API",
+    "_postman_id": "c9c8c1a2-9f44-4c2a-9c6e-123456789abc",
+    "description": "Postman collection for SQLite-powered ecommerce API with Fastify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Stats",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/statistics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products"
+          }
+        },
+        {
+          "name": "Get Products (Filtered)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products?search=laptop&minPrice=100&maxPrice=1000&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products/1"
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Product\",\n  \"description\": \"A great product\",\n  \"price\": 99.99,\n  \"category\": \"Electronics\",\n  \"brand\": \"BrandName\",\n  \"rating\": 4.5,\n  \"stock\": 100\n}"
+            },
+            "url": "{{baseUrl}}/products"
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 149.99\n}"
+            },
+            "url": "{{baseUrl}}/products/1"
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/products/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories"
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories/electronics/products?page=1&limit=5"
+          }
+        },
+        {
+          "name": "Get Category Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories/electronics/stats"
+          }
+        },
+        {
+          "name": "Create Product in Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Category Product\",\n  \"description\": \"Category specific product\",\n  \"price\": 59.99,\n  \"brand\": \"BrandX\",\n  \"rating\": 4.2,\n  \"stock\": 50\n}"
+            },
+            "url": "{{baseUrl}}/categories/electronics/products"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin / Debug",
+      "item": [
+        {
+          "name": "Reload Products",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"count\": 300,\n  \"seed\": 999,\n  \"persist\": true\n}"
+            },
+            "url": "{{baseUrl}}/reload-products"
+          }
+        }
+      ]
+    }
+  ]
+}

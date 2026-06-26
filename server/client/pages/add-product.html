@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Product - E-Commerce Store</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="logo">🛍️ E-Shop</div>
+        <div class="nav-search">
+          <input
+            type="text"
+            id="header-search-input"
+            class="header-search-bar"
+            placeholder="Search products..."
+          />
+        </div>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="./categories.html">Categories</a></li>
+          <li><a href="./add-product.html">Add Product</a></li>
+          <li>
+            <a href="./cart.html">Cart <span id="cart-count">0</span></a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section id="add-product">
+        <div class="card">
+          <h2 style="margin-bottom: 10px">Add New Product</h2>
+          <form id="product-form">
+            <div class="form-group">
+              <label for="title">Product Title *</label>
+              <input type="text" id="title" name="title" required />
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description *</label>
+              <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Price *</label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                step="0.01"
+                min="0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select id="category" name="category" required>
+                <option value="">Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Books">Books</option>
+                <option value="Sports">Sports</option>
+                <option value="Home">Home</option>
+                <option value="Beauty">Beauty</option>
+                <option value="Toys">Toys</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rating">Rating (1-5)</label>
+              <input
+                type="number"
+                id="rating"
+                name="rating"
+                min="1"
+                max="5"
+                step="0.1"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="stock">Stock Quantity</label>
+              <input type="number" id="stock" name="stock" min="0" />
+            </div>
+
+            <div class="form-group">
+              <label for="brand">Brand</label>
+              <input type="text" id="brand" name="brand" />
+            </div>
+
+            <div class="form-group">
+              <button type="submit" class="btn btn-success">Add Product</button>
+              <a
+                href="/"
+                class="btn btn-secondary"
+                style="padding-top: 9.3px; padding-bottom: 9.3px"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 E-Shop. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script>
+      const form = document.getElementById("product-form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const product = {
+          title: formData.get("title"),
+          description: formData.get("description"),
+          price: parseFloat(formData.get("price")),
+          category: formData.get("category"),
+          rating: formData.get("rating")
+            ? parseFloat(formData.get("rating"))
+            : undefined,
+          stock: formData.get("stock")
+            ? parseInt(formData.get("stock"))
+            : undefined,
+          brand: formData.get("brand") || undefined,
+        };
+        try {
+          const result = await createProduct(product);
+          showToast(
+            "Product Added! 🎉",
+            `${product.title} successfully created.`,
+            "success",
+          );
+          //           setTimeout(() => {
+          //   window.location.href = "../index.html";
+          // }, 1500);
+          //form.reset() nahi — data rahega
+        } catch (error) {
+          console.error("Error creating product:", error);
+          showToast(
+            "Error ❌",
+            "Failed to create product. Please try again.",
+            "error",
+          );
+        }
+      });
+
+      const cancelBtn = document.querySelector(".btn-secondary");
+      cancelBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        showToast("Cancelled 🚫 Product creation cancelled.", "", "error");
+        //form.reset() nahi — data rahega
+      });
+    </script>
+  </body>
+</html>
