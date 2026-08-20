@@ -109,11 +109,30 @@
       }
 
       // 👇 LOGOUT FUNCTION BHI ADD KARO
+      // function logout() {
+      //   localStorage.removeItem("token");
+      //   localStorage.removeItem("user");
+      //   window.location.href = "login.html";
+      // }
+
       function logout() {
+        document.getElementById("logoutModal").classList.add("active");
+      }
+      function closeLogoutModal() {
+        document.getElementById("logoutModal").classList.remove("active");
+      }
+      function confirmLogout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "login.html";
       }
+
+      // Click outside modal to close
+      document
+        .getElementById("logoutModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeLogoutModal();
+        });
 
       // Carousel
       function initCarousel() {
@@ -159,5 +178,21 @@
         loadFeaturedProducts();
       }
     </script>
+    <!-- LOGOUT MODAL -->
+    <div class="modal-overlay" id="logoutModal">
+      <div class="modal-box">
+        <div class="modal-icon">👋</div>
+        <h3>Leaving so soon?</h3>
+        <p>Are you sure you want to logout from E-Shop?</p>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeLogoutModal()">
+            Cancel
+          </button>
+          <button class="btn-logout" onclick="confirmLogout()">
+            Yes, Logout
+          </button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
